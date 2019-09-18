@@ -1,15 +1,18 @@
 package io.usoamic.swapbackend
 
 import io.usoamic.swapbackend.model.withdrawals
+import io.usoamic.swapbackend.other.Config
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 //https://github.com/JetBrains/Exposed
 class SwapBackend {
     init {
-//        Base.open("com.mysql.jdbc.Driver", "jdbc:mysql://157.245.182.2", "admin_default", "FnVhMPh68A")
-
-        Database.connect("jdbc:mysql://157.245.182.2:3306/admin_default", driver = "com.mysql.jdbc.Driver",
-            user = "admin_default", password = "FnVhMPh68A")
+        Database.connect(
+            url = Config.DB_URL,
+            driver = Config.DB_DRIVER,
+            user = Config.DB_USER,
+            password = Config.DB_PASSWORD
+        )
 
         transaction {
             SchemaUtils.create(withdrawals)
