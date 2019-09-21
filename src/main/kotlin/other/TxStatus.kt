@@ -18,12 +18,12 @@ enum class TxStatus {
     }
 
     fun toId(): String {
-        return this.ordinal.toString()
+        return (this.ordinal + 1).toString()
     }
 
     companion object {
         fun valueOf(id: Int): TxStatus {
-            return values()[id]
+            return values()[id - 1]
         }
     }
 }
