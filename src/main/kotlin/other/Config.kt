@@ -12,5 +12,12 @@ class Config {
         const val AES_METHOD = LocalConfig.AES_METHOD
         const val AES_KEY = LocalConfig.AES_KEY
         const val AES_IV = LocalConfig.AES_IV
+
+        //USOAMIC
+        const val NODE = LocalConfig.NODE
+        const val ACCOUNT_FILENAME = LocalConfig.ACCOUNT_FILENAME
+        const val ACCOUNT_PASSWORD = LocalConfig.ACCOUNT_PASSWORD
+        const val ACCOUNT_PRIVATE_KEY = LocalConfig.ACCOUNT_PRIVATE_KEY
+        const val CONTRACT_ADDRESS = LocalConfig.CONTRACT_ADDRESS
     }
 }
