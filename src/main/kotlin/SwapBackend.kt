@@ -17,9 +17,9 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 //https://github.com/JetBrains/Exposed
-class SwapBackend {
-    private val cipher: AesCipher = AesCipher(Config.AES_METHOD, Config.AES_KEY, Config.AES_IV)
-    private val usoamic = Usoamic(Config.ACCOUNT_FILENAME, Config.CONTRACT_ADDRESS, Config.NODE)
+class SwapBackend(private val config: Config) {
+    private val cipher: AesCipher = AesCipher(config.AES_METHOD, config.AES_KEY, config.AES_IV)
+    private val usoamic = Usoamic(config.ACCOUNT_FILENAME, config.CONTRACT_ADDRESS, config.NODE)
 
     init {
         importPrivateKey()
@@ -27,15 +27,15 @@ class SwapBackend {
     }
 
     private fun importPrivateKey() {
-        usoamic.importPrivateKey(Config.ACCOUNT_PASSWORD, Config.ACCOUNT_PRIVATE_KEY)
+        usoamic.importPrivateKey(config.ACCOUNT_PASSWORD, config.ACCOUNT_PRIVATE_KEY)
     }
 
     private fun connect() {
         Database.connect(
-            url = Config.DB_URL,
-            driver = Config.DB_DRIVER,
-            user = Config.DB_USER,
-            password = Config.DB_PASSWORD
+            url = config.DB_URL,
+            driver = config.DB_DRIVER,
+            user = config.DB_USER,
+            password = config.DB_PASSWORD
         )
     }
 
@@ -64,8 +64,8 @@ class SwapBackend {
 
     private fun onNoTransfers() {
         Log.d("- No transfers -")
-        Log.d("Waiting ${Config.TIMEOUT} secs...")
-        Thread.sleep(Config.TIMEOUT*1000)
+        Log.d("Waiting ${config.TIMEOUT} secs...")
+        Thread.sleep(config.TIMEOUT*1000)
         processNextTx()
     }
 
@@ -80,7 +80,7 @@ class SwapBackend {
                         try {
                             Log.d("address: $address")
                             Log.d("amount: ${Coin.fromSat(amount).toBigDecimal()}")
-                            val txHash = usoamic.transferUso(Config.ACCOUNT_PASSWORD, address, amount)
+                            val txHash = usoamic.transferUso(config.ACCOUNT_PASSWORD, address, amount)
                             Log.d("New transfer: $txHash")
                             transaction {
                                 withdrawals.update({ withdrawals.id eq id }) {
