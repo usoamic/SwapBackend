@@ -1,26 +1,30 @@
 package io.usoamic.swapbackend.other
 
-class Config {
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
+import io.usoamic.usoamickotlin.model.Account
+
+data class Config (
+    @SerializedName("db_url") val DB_URL: String,
+    @SerializedName("db_driver") val DB_DRIVER: String,
+    @SerializedName("db_user") val DB_USER: String,
+    @SerializedName("db_password") val DB_PASSWORD: String,
+
+    @SerializedName("aes_method") val AES_METHOD: String,
+    @SerializedName("aes_key") val AES_KEY: String,
+    @SerializedName("aes_iv") val AES_IV: String,
+
+    @SerializedName("node") val NODE: String,
+    @SerializedName("account_filename") val ACCOUNT_FILENAME: String,
+    @SerializedName("account_password") val ACCOUNT_PASSWORD: String,
+    @SerializedName("account_private_key") val ACCOUNT_PRIVATE_KEY: String,
+    @SerializedName("contract_address") val CONTRACT_ADDRESS: String,
+
+    @SerializedName("timeout") val TIMEOUT: Long
+) {
     companion object {
-        //DB
-        const val DB_URL = LocalConfig.DB_URL
-        const val DB_DRIVER = LocalConfig.DB_DRIVER
-        const val DB_USER = LocalConfig.DB_USER
-        const val DB_PASSWORD = LocalConfig.DB_PASSWORD
-
-        //AES
-        const val AES_METHOD = LocalConfig.AES_METHOD
-        const val AES_KEY = LocalConfig.AES_KEY
-        const val AES_IV = LocalConfig.AES_IV
-
-        //USOAMIC
-        const val NODE = LocalConfig.NODE
-        const val ACCOUNT_FILENAME = LocalConfig.ACCOUNT_FILENAME
-        const val ACCOUNT_PASSWORD = LocalConfig.ACCOUNT_PASSWORD
-        const val ACCOUNT_PRIVATE_KEY = LocalConfig.ACCOUNT_PRIVATE_KEY
-        const val CONTRACT_ADDRESS = LocalConfig.CONTRACT_ADDRESS
-
-        //OTHER
-        const val TIMEOUT = LocalConfig.TIMEOUT
+        fun fromJson(json: String): Config {
+            return Gson().fromJson(json, Config::class.java)
+        }
     }
 }
