@@ -12,6 +12,8 @@ import io.usoamic.swapbackend.util.Log
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import io.usoamic.usoamickotlin.core.Usoamic
+import io.usoamic.usoamickotlin.util.Coin
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 //https://github.com/JetBrains/Exposed
@@ -21,7 +23,7 @@ class SwapBackend {
 
     init {
         importPrivateKey()
-        processTx()
+        processNextTx()
     }
 
     private fun importPrivateKey() {
@@ -37,23 +39,37 @@ class SwapBackend {
         )
     }
 
-    private fun processTx() {
-        connect()
-        transaction {
-            cipher.encrypt(TxStatus.TX_PENDING.toId())?.let { encryptedStatus ->
-                val resultRow = withdrawals.select(status eq encryptedStatus).firstOrNull()
-                resultRow?.let { row ->
-                    close()
-                    process(row) {
-                        Thread.sleep(5000)
-                        processTx()
+    private fun processNextTx() {
+        cipher.encrypt(TxStatus.TX_PENDING.toId())?.let { encryptedStatus ->
+            try {
+                connect()
+                transaction {
+                    Log.d("==========")
+                    val resultRow = withdrawals.select(status eq encryptedStatus).firstOrNull()
+                    resultRow?.let { row ->
+                        close()
+                        processTx(row)
+                    } ?: run {
+                        close()
+                        onNoTransfers()
                     }
-                } ?: Log.d("No transfers")
+                }
+            }
+            catch (e: ExposedSQLException) {
+                Log.d("exception: ${e.message}")
+                onNoTransfers()
             }
         }
     }
 
-    private fun process(resultRow: ResultRow, callback: () -> Unit) {
+    private fun onNoTransfers() {
+        Log.d("- No transfers -")
+        Log.d("Waiting ${Config.TIMEOUT} secs...")
+        Thread.sleep(Config.TIMEOUT*1000)
+        processNextTx()
+    }
+
+    private fun processTx(resultRow: ResultRow) {
         val id = resultRow[id]
         cipher.decrypt(resultRow[status])?.toIntOrNull()?.let { status ->
             val txStatus = TxStatus.valueOf(status)
@@ -63,7 +79,7 @@ class SwapBackend {
                     cipher.decrypt(resultRow[address])?.let { address ->
                         try {
                             Log.d("address: $address")
-                            Log.d("amount: $amount")
+                            Log.d("amount: ${Coin.fromSat(amount).toBigDecimal()}")
                             val txHash = usoamic.transferUso(Config.ACCOUNT_PASSWORD, address, amount)
                             Log.d("New transfer: $txHash")
                             transaction {
@@ -74,7 +90,7 @@ class SwapBackend {
                             }
                             Log.d("Waiting confirmation...")
                             usoamic.waitTransactionReceipt(txHash) {
-                                callback()
+                                processNextTx()
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
