@@ -19,5 +19,8 @@ class Config {
         const val ACCOUNT_PASSWORD = LocalConfig.ACCOUNT_PASSWORD
         const val ACCOUNT_PRIVATE_KEY = LocalConfig.ACCOUNT_PRIVATE_KEY
         const val CONTRACT_ADDRESS = LocalConfig.CONTRACT_ADDRESS
+
+        //OTHER
+        const val TIMEOUT = LocalConfig.TIMEOUT
     }
 }
