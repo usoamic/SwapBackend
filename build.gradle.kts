@@ -1,0 +1,59 @@
+import org.gradle.jvm.tasks.Jar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    java
+    kotlin("jvm") version "1.3.50"
+    kotlin("kapt") version "1.3.50"
+}
+
+configure<JavaPluginConvention> {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile("org.jetbrains.kotlin", "kotlin-stdlib", "1.3.50")
+    compile("org.web3j", "core", "4.3.1")
+    compile("org.jetbrains.exposed", "exposed", "0.17.2")
+    compile("mysql", "mysql-connector-java", "8.0.17")
+    compile("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+    compile("com.google.code.gson", "gson", "2.8.5")
+    compile(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+}
+
+val fatJar = task("fatJar", type = Jar::class) {
+    baseName = "${project.name}-fat"
+    // manifest Main-Class attribute is optional.
+    // (Used only to provide default main class for executable jar)
+    manifest {
+        attributes["Main-Class"] = "io.usoamic.swapbackend.App"
+    }
+    from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
+    exclude(
+        "META-INF/*.SF",
+        "META-INF/*.DSA",
+        "META-INF/*.RSA",
+        "junit",
+        "org.mockito",
+        "org.hamcrest"
+    )
+    with(tasks["jar"] as CopySpec)
+}
+
+tasks {
+    "build" {
+        dependsOn(fatJar)
+    }
+}
