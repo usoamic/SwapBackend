@@ -21,6 +21,7 @@ tasks.withType<KotlinCompile> {
 repositories {
     mavenCentral()
     jcenter()
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -30,7 +31,7 @@ dependencies {
     compile("mysql", "mysql-connector-java", "8.0.17")
     compile("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
     compile("com.google.code.gson", "gson", "2.8.5")
-    compile(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    compile("com.github.usoamic", "usoamic-kotlin", "v1.0.10")
 }
 
 val fatJar = task("fatJar", type = Jar::class) {
