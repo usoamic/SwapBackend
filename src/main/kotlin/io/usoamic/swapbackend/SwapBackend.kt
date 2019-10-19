@@ -18,11 +18,6 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.telegram.telegrambots.ApiContextInitializer
 import org.telegram.telegrambots.meta.TelegramBotsApi
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-
-
 
 //https://github.com/JetBrains/Exposed
 class SwapBackend(private val config: Config) {
@@ -112,10 +107,10 @@ class SwapBackend(private val config: Config) {
                                 }
                                 commit()
                             }
-                            bot.sendNotification("TxData: { $address, $amount }")
+                            sendNotification("TxData: { $address, $amount }")
                             Log.d("Waiting confirmation...")
                             usoamic.waitTransactionReceipt(txHash) {
-                                bot.sendNotification("TxHash: { $txHash }")
+                                sendNotification("TxHash: { $txHash }")
                                 processNextTx()
                             }
                         } catch (e: Exception) {
@@ -128,7 +123,13 @@ class SwapBackend(private val config: Config) {
         }
     }
 
+    private fun sendNotification(message: String) {
+        if(::bot.isInitialized) {
+            bot.sendNotification(message)
+        }
+    }
+
     private fun onException(e: Exception) {
-        bot.sendNotification("Exception(): ${e.javaClass}")
+        sendNotification("Exception(): ${e.javaClass}")
     }
 }
