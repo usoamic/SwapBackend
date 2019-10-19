@@ -2,6 +2,7 @@ package io.usoamic.swapbackend.other
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import io.usoamic.swapbackend.model.Bot
 import io.usoamic.usoamickotlin.model.Account
 
 data class Config (
@@ -20,8 +21,12 @@ data class Config (
     @SerializedName("account_private_key") val ACCOUNT_PRIVATE_KEY: String,
     @SerializedName("contract_address") val CONTRACT_ADDRESS: String,
 
+    @SerializedName("bot") val BOT: Bot?,
+
     @SerializedName("timeout") val TIMEOUT: Long
 ) {
+    val isTelegramEnabled get() = (BOT != null)
+
     companion object {
         fun fromJson(json: String): Config {
             return Gson().fromJson(json, Config::class.java)
