@@ -11,5 +11,10 @@
   "account_password":"@1234",
   "account_private_key":"ACCOUNT_PRIVATE_KEY",
   "contract_address":"0xb894d4329329b6150258c0048f6dfb41257359f5",
+  "bot": {
+    "token": "TOKEN",
+    "chatId": 12345,
+    "username": "Bot"
+  },
   "timeout":60
 }
