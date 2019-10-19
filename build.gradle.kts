@@ -37,6 +37,7 @@ dependencies {
     compile("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
     compile("com.google.code.gson", "gson", "2.8.5")
     compile("com.github.usoamic", "usoamic-kotlin", "v1.0.10")
+    compile("org.telegram", "telegrambots", "4.4.0")
 }
 
 val fatJar = task("fatJar", type = Jar::class) {
