@@ -3,7 +3,6 @@ package io.usoamic.swapbackend.other
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import io.usoamic.swapbackend.model.Bot
-import io.usoamic.usoamickotlin.model.Account
 
 data class Config (
     @SerializedName("db_url") val DB_URL: String,

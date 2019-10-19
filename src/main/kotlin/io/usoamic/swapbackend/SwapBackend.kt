@@ -12,8 +12,8 @@ import io.usoamic.swapbackend.security.AesCipher
 import io.usoamic.swapbackend.util.Log
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import io.usoamic.usoamickotlin.core.Usoamic
-import io.usoamic.usoamickotlin.util.Coin
+import io.usoamic.usoamickt.core.Usoamic
+import io.usoamic.usoamickt.util.Coin
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.telegram.telegrambots.ApiContextInitializer
