@@ -39,7 +39,7 @@ class AesCipher constructor(
 
             // Result is base64-encoded string: initVector + encrypted result
             return Base64.getEncoder().encodeToString(encrypted)
-        } catch (t: Throwable) { }
+        } catch (t: Throwable) { t.printStackTrace() }
         return null
     }
 
@@ -63,7 +63,7 @@ class AesCipher constructor(
 
             // Trying to get decrypted text
             return String(cipher.doFinal(encrypted))
-        } catch (t: Throwable) { }
+        } catch (t: Throwable) { t.printStackTrace() }
         return null
     }
 
