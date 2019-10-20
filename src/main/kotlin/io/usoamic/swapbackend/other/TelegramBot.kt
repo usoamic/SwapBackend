@@ -11,7 +11,7 @@ class TelegramBot(
     private val username: String
 ) : TelegramLongPollingBot() {
     fun sendNotification(message: String) {
-        if(chatId != 0.toLong()) {
+        if(chatId == 0.toLong()) {
             println("Invalid chat id")
         }
         else {
