@@ -98,7 +98,6 @@ class SwapBackend(private val config: Config) {
                     cipher.decrypt(resultRow[address])?.let { address ->
                         try {
                             Log.d("address: $address")
-                            Log.d("amount: ${Coin.fromSat(amount).toBigDecimal()}")
                             val txHash = usoamic.transferUso(config.ACCOUNT_PASSWORD, address, amount)
                             Log.d("New transfer: $txHash")
                             transaction {
@@ -107,7 +106,9 @@ class SwapBackend(private val config: Config) {
                                 }
                                 commit()
                             }
-                            sendNotification("TxData: { $address, $amount }")
+                            val numberOfCoins = Coin.fromSat(amount).toBigDecimal()
+
+                            sendNotification("TxData: { $address, $numberOfCoins }")
                             Log.d("Waiting confirmation...")
                             usoamic.waitTransactionReceipt(txHash) {
                                 sendNotification("TxHash: { $txHash }")
@@ -124,6 +125,7 @@ class SwapBackend(private val config: Config) {
     }
 
     private fun sendNotification(message: String) {
+        println(message)
         if(::bot.isInitialized) {
             bot.sendNotification(message)
         }
