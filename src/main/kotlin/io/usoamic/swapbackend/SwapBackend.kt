@@ -1,11 +1,11 @@
 package io.usoamic.swapbackend
 
-import io.usoamic.swapbackend.model.withdrawals
-import io.usoamic.swapbackend.model.withdrawals.address
-import io.usoamic.swapbackend.model.withdrawals.amount
-import io.usoamic.swapbackend.model.withdrawals.id
-import io.usoamic.swapbackend.model.withdrawals.status
-import io.usoamic.swapbackend.other.Config
+import io.usoamic.swapbackend.model.db.withdrawals
+import io.usoamic.swapbackend.model.db.withdrawals.address
+import io.usoamic.swapbackend.model.db.withdrawals.amount
+import io.usoamic.swapbackend.model.db.withdrawals.id
+import io.usoamic.swapbackend.model.db.withdrawals.status
+import io.usoamic.swapbackend.model.config.Config
 import io.usoamic.swapbackend.other.TelegramBot
 import io.usoamic.swapbackend.other.TxStatus
 import io.usoamic.swapbackend.security.AesCipher

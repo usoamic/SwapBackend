@@ -1,6 +1,6 @@
 package io.usoamic.swapbackend
 
-import io.usoamic.swapbackend.other.Config
+import io.usoamic.swapbackend.model.config.Config
 import org.web3j.utils.Files
 import java.io.File
 

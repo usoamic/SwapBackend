@@ -1,4 +1,4 @@
-package io.usoamic.swapbackend.model
+package io.usoamic.swapbackend.model.db
 
 import org.jetbrains.exposed.sql.*
 
