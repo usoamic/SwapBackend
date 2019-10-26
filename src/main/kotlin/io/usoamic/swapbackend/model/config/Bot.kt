@@ -1,4 +1,4 @@
-package io.usoamic.swapbackend.model
+package io.usoamic.swapbackend.model.config
 
 import com.google.gson.annotations.SerializedName
 

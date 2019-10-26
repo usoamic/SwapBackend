@@ -1,8 +1,7 @@
-package io.usoamic.swapbackend.other
+package io.usoamic.swapbackend.model.config
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import io.usoamic.swapbackend.model.Bot
 
 data class Config (
     @SerializedName("db_url") val DB_URL: String,
