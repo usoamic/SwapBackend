@@ -10,7 +10,6 @@ object App {
         val configName = if (args.isEmpty()) "config.json" else args[0]
         val json = Files.readString(File(configName))
         val config = Config.fromJson(json)
-        println("${config.Network.Node}, ${config.Network.Type} ")
-//        SwapBackend(config)
+        SwapBackend(config)
     }
 }
