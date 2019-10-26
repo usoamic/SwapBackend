@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "io.usoamic"
-    version = "1.1.2"
+    version = "1.2.0"
 }
 
 configure<JavaPluginConvention> {
