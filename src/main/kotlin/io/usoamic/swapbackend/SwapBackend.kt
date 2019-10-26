@@ -1,11 +1,11 @@
 package io.usoamic.swapbackend
 
-import io.usoamic.swapbackend.model.withdrawals
-import io.usoamic.swapbackend.model.withdrawals.address
-import io.usoamic.swapbackend.model.withdrawals.amount
-import io.usoamic.swapbackend.model.withdrawals.id
-import io.usoamic.swapbackend.model.withdrawals.status
-import io.usoamic.swapbackend.other.Config
+import io.usoamic.swapbackend.model.db.withdrawals
+import io.usoamic.swapbackend.model.db.withdrawals.address
+import io.usoamic.swapbackend.model.db.withdrawals.amount
+import io.usoamic.swapbackend.model.db.withdrawals.id
+import io.usoamic.swapbackend.model.db.withdrawals.status
+import io.usoamic.swapbackend.model.config.Config
 import io.usoamic.swapbackend.other.TelegramBot
 import io.usoamic.swapbackend.other.TxStatus
 import io.usoamic.swapbackend.security.AesCipher
@@ -21,8 +21,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi
 
 //https://github.com/JetBrains/Exposed
 class SwapBackend(private val config: Config) {
-    private val cipher = AesCipher(config.AES_METHOD, config.AES_KEY, config.AES_IV)
-    private val usoamic = Usoamic(config.ACCOUNT_FILENAME, config.CONTRACT_ADDRESS, config.NODE)
+    private val cipher = AesCipher(config.Aes.Method, config.Aes.Key, config.Aes.IV)
+    private val usoamic = Usoamic(config.Account.Filename, config.Network.Type, config.Network.Node)
     private lateinit var bot: TelegramBot
 
     init {
@@ -33,11 +33,11 @@ class SwapBackend(private val config: Config) {
 
     private fun initTelegramBot() {
         ApiContextInitializer.init()
-        config.BOT?.let {
+        config.Bot?.let {
             bot = TelegramBot(
-                token = it.TOKEN,
-                chatId = it.CHAT_ID,
-                username = it.USERNAME
+                token = it.Token,
+                chatId = it.ChatId,
+                username = it.Username
             )
         }
 
@@ -46,15 +46,15 @@ class SwapBackend(private val config: Config) {
     }
 
     private fun importPrivateKey() {
-        usoamic.importPrivateKey(config.ACCOUNT_PASSWORD, config.ACCOUNT_PRIVATE_KEY)
+        usoamic.importPrivateKey(config.Account.Password, config.Account.PrivateKey)
     }
 
     private fun connect() {
         Database.connect(
-            url = config.DB_URL,
-            driver = config.DB_DRIVER,
-            user = config.DB_USER,
-            password = config.DB_PASSWORD
+            url = config.Db.Url,
+            driver = config.Db.Driver,
+            user = config.Db.User,
+            password = config.Db.Password
         )
     }
 
@@ -83,8 +83,8 @@ class SwapBackend(private val config: Config) {
 
     private fun onNoTransfers() {
         Log.d("- No transfers -")
-        Log.d("Waiting ${config.TIMEOUT} secs...")
-        Thread.sleep(config.TIMEOUT*1000)
+        Log.d("Waiting ${config.Timeout} secs...")
+        Thread.sleep(config.Timeout*1000)
         processNextTx()
     }
 
@@ -98,7 +98,7 @@ class SwapBackend(private val config: Config) {
                     cipher.decrypt(resultRow[address])?.let { address ->
                         try {
                             Log.d("address: $address")
-                            val txHash = usoamic.transferUso(config.ACCOUNT_PASSWORD, address, amount)
+                            val txHash = usoamic.transferUso(config.Account.Password, address, amount)
                             Log.d("New transfer: $txHash")
                             transaction {
                                 withdrawals.update({ withdrawals.id eq id }) {

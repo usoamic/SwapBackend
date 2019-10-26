@@ -1,16 +1,25 @@
 {
-  "db_url":"jdbc:mysql://127.0.0.1:3306/default",
-  "db_driver":"com.mysql.cj.jdbc.Driver",
-  "db_user":"default",
-  "db_password":"@1234",
-  "aes_method":"AES/CBC/PKCS5Padding",
-  "aes_key":"AES_KEY",
-  "aes_iv":"AES_IV",
-  "node":"https://rinkeby.infura.io:443",
-  "account_filename":"account.json",
-  "account_password":"@1234",
-  "account_private_key":"ACCOUNT_PRIVATE_KEY",
-  "contract_address":"0xb894d4329329b6150258c0048f6dfb41257359f5",
+  "db": {
+    "url":"jdbc:mysql://127.0.0.1:3306/default",
+    "driver":"com.mysql.cj.jdbc.Driver",
+    "user":"default",
+    "password":"@1234"
+  },
+  "aes": {
+    "method":"AES/CBC/PKCS5Padding",
+    "key":"AES_KEY",
+    "iv":"AES_IV"
+  },
+  "account": {
+    "filename": "account.json",
+    "password": "@1234",
+    "private_key": "ACCOUNT_PRIVATE_KEY"
+  },
+  "network": {
+    "type": "mainnet",
+    "node": "infura",
+    "contract": "0xb894d4329329b6150258c0048f6dfb41257359f5"
+  },
   "bot": {
     "token": "TOKEN",
     "chatId": 12345,

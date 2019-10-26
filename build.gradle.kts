@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "io.usoamic"
-    version = "1.1.2"
+    version = "1.2.0"
 }
 
 configure<JavaPluginConvention> {
@@ -36,7 +36,7 @@ dependencies {
     compile("mysql", "mysql-connector-java", "8.0.17")
     compile("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
     compile("com.google.code.gson", "gson", "2.8.5")
-    compile("com.github.usoamic", "usoamickt", "v1.0.11")
+    compile("com.github.usoamic", "usoamickt", "v1.1")
     compile("org.telegram", "telegrambots", "4.4.0.1")
 }
 
