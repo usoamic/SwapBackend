@@ -18,6 +18,7 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.telegram.telegrambots.ApiContextInitializer
 import org.telegram.telegrambots.meta.TelegramBotsApi
+import kotlin.system.exitProcess
 
 //https://github.com/JetBrains/Exposed
 class SwapBackend(private val config: Config) {
@@ -74,7 +75,7 @@ class SwapBackend(private val config: Config) {
                     }
                 }
             }
-            catch (e: ExposedSQLException) {
+            catch (e: java.lang.Exception) {
                 onException(e)
                 onNoTransfers()
             }
@@ -83,9 +84,14 @@ class SwapBackend(private val config: Config) {
 
     private fun onNoTransfers() {
         Log.d("- No transfers -")
-        Log.d("Waiting ${config.Timeout} secs...")
-        Thread.sleep(config.Timeout*1000)
-        processNextTx()
+        if(config.Timeout == -1L) {
+            exitProcess(0)
+        }
+        else {
+            Log.d("Waiting ${config.Timeout} secs...")
+            Thread.sleep(config.Timeout * 1000)
+            processNextTx()
+        }
     }
 
     private fun processTx(resultRow: ResultRow) {
