@@ -3,13 +3,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.3.50"
-    kotlin("kapt") version "1.3.50"
+    kotlin("jvm") version "1.3.72"
+    kotlin("kapt") version "1.3.72"
 }
 
 allprojects {
     group = "io.usoamic"
-    version = "1.2.2"
+    version = "1.2.3"
 }
 
 configure<JavaPluginConvention> {
@@ -30,13 +30,13 @@ repositories {
 }
 
 dependencies {
-    compile("org.jetbrains.kotlin", "kotlin-stdlib", "1.3.50")
+    compile("org.jetbrains.kotlin", "kotlin-stdlib", "1.3.72")
     compile("org.web3j", "core", "4.3.1")
-    compile("org.jetbrains.exposed", "exposed", "0.17.2")
-    compile("mysql", "mysql-connector-java", "8.0.17")
+    compile("org.jetbrains.exposed", "exposed", "0.17.7")
+    compile("mysql", "mysql-connector-java", "8.0.19")
     compile("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
-    compile("com.google.code.gson", "gson", "2.8.5")
-    compile("com.github.usoamic", "usoamickt", "v1.1.1")
+    compile("com.google.code.gson", "gson", "2.8.6")
+    compile("com.github.usoamic", "usoamickt", "v1.1.5")
     compile("org.telegram", "telegrambots", "4.4.0.1")
 }
 

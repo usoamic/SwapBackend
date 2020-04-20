@@ -17,7 +17,8 @@
   },
   "network": {
     "type": "mainnet",
-    "node": "infura"
+    "node": "infura",
+    "arguments": ""
   },
   "bot": {
     "token": "TOKEN",
