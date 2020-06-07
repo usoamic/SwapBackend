@@ -42,8 +42,10 @@ class SwapBackend(private val config: Config) {
             )
         }
 
-        val tbApi = TelegramBotsApi()
-        tbApi.registerBot(bot)
+        if (::bot.isInitialized) {
+            val tbApi = TelegramBotsApi()
+            tbApi.registerBot(bot)
+        }
     }
 
     private fun importPrivateKey() {
@@ -74,8 +76,7 @@ class SwapBackend(private val config: Config) {
                         onNoTransfers()
                     }
                 }
-            }
-            catch (e: java.lang.Exception) {
+            } catch (e: java.lang.Exception) {
                 onException(e)
                 onNoTransfers()
             }
@@ -84,10 +85,9 @@ class SwapBackend(private val config: Config) {
 
     private fun onNoTransfers() {
         Log.d("- No transfers -")
-        if(config.Timeout == -1L) {
+        if (config.Timeout == -1L) {
             exitProcess(0)
-        }
-        else {
+        } else {
             Log.d("Waiting ${config.Timeout} secs...")
             Thread.sleep(config.Timeout * 1000)
             processNextTx()
@@ -132,7 +132,7 @@ class SwapBackend(private val config: Config) {
 
     private fun sendNotification(message: String) {
         println(message)
-        if(::bot.isInitialized) {
+        if (::bot.isInitialized) {
             bot.sendNotification(message)
         }
     }
