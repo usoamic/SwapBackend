@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "io.usoamic"
-    version = "1.2.3"
+    version = "1.2.4"
 }
 
 configure<JavaPluginConvention> {
@@ -31,13 +31,13 @@ repositories {
 
 dependencies {
     compile("org.jetbrains.kotlin", "kotlin-stdlib", "1.3.72")
-    compile("org.web3j", "core", "4.3.1")
+    compile("org.web3j", "core", "4.6.0")
     compile("org.jetbrains.exposed", "exposed", "0.17.7")
-    compile("mysql", "mysql-connector-java", "8.0.19")
+    compile("mysql", "mysql-connector-java", "8.0.20")
     compile("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
     compile("com.google.code.gson", "gson", "2.8.6")
-    compile("com.github.usoamic", "usoamickt", "v1.1.5")
-    compile("org.telegram", "telegrambots", "4.4.0.1")
+    compile("com.github.usoamic", "usoamickt", "v1.2.1c-SNAPSHOT")
+    compile("org.telegram", "telegrambots", "4.9")
 }
 
 val fatJar = task("fatJar", type = Jar::class) {
