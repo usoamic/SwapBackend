@@ -10,11 +10,11 @@ enum class TxStatus {
     }
 
     fun isConfirmed(): Boolean {
-        return (this == TX_PENDING)
+        return (this == TX_CONFIRMED)
     }
 
     fun isRejected(): Boolean {
-        return (this == TX_PENDING)
+        return (this == TX_REJECTED)
     }
 
     fun toId(): String {
