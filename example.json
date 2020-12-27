@@ -25,5 +25,6 @@
     "chatId": 12345,
     "username": "Bot"
   },
+  "ethThreshold": 0,
   "timeout":60
 }
