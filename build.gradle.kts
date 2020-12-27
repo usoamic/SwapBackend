@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "io.usoamic"
-    version = "1.2.4"
+    version = "1.2.5"
 }
 
 configure<JavaPluginConvention> {
@@ -32,11 +32,13 @@ repositories {
 dependencies {
     compile("org.jetbrains.kotlin", "kotlin-stdlib", "1.3.72")
     compile("org.web3j", "core", "4.6.0")
-    compile("org.jetbrains.exposed", "exposed", "0.17.7")
-    compile("mysql", "mysql-connector-java", "8.0.20")
+    compile("org.jetbrains.exposed", "exposed-core", "0.28.1")
+    compile("org.jetbrains.exposed", "exposed-dao", "0.28.1")
+    compile("org.jetbrains.exposed", "exposed-jdbc", "0.28.1")
+    compile("mysql", "mysql-connector-java", "8.0.22")
     compile("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
     compile("com.google.code.gson", "gson", "2.8.6")
-    compile("com.github.usoamic", "usoamickt", "v1.2.1c-SNAPSHOT")
+    compile("com.github.usoamic", "usoamickt", "v1.2.1")
     compile("org.telegram", "telegrambots", "4.9")
 }
 
