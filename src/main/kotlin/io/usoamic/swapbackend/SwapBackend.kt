@@ -87,11 +87,11 @@ class SwapBackend(private val config: Config) {
                     Log.d("==========")
                     val resultRow = withdrawals.select(status eq encryptedStatus).firstOrNull()
                     resultRow?.let { row ->
+                        close()
                         processTx(row)
-                        close()
                     } ?: run {
-                        onNoTransfers()
                         close()
+                        onNoTransfers()
                     }
                 }
             } catch (e: java.lang.Exception) {
