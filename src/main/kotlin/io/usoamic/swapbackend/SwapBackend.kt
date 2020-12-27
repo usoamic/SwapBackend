@@ -11,6 +11,7 @@ import io.usoamic.swapbackend.other.TxStatus
 import io.usoamic.swapbackend.security.AesCipher
 import io.usoamic.swapbackend.util.Log
 import io.usoamic.usoamickt.core.Usoamic
+import io.usoamic.usoamickt.enumcls.TxSpeed
 import io.usoamic.usoamickt.util.Coin
 import io.usoamic.usoamickt.util.DirectoryUtils
 import org.jetbrains.exposed.sql.Database
@@ -21,18 +22,25 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.telegram.telegrambots.ApiContextInitializer
 import org.telegram.telegrambots.meta.TelegramBotsApi
+import org.web3j.utils.Convert
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.system.exitProcess
 
 //https://github.com/JetBrains/Exposed
 class SwapBackend(private val config: Config) {
-    private val cipher = AesCipher(config.Aes.Method, config.Aes.Key, config.Aes.IV)
+    private val cipher = AesCipher(
+        method = config.Aes.Method,
+        key = config.Aes.Key,
+        iv = config.Aes.IV
+    )
     private val usoamic = Usoamic(
         fileName = config.Account.Filename,
         filePath = DirectoryUtils.getDefaultKeyDirectory(),
         networkType = config.Network.Type,
         nodeProvider = config.Network.Node
     )
-
+    private var ethBalance = BigDecimal.ZERO
     private lateinit var bot: TelegramBot
 
     init {
@@ -74,15 +82,16 @@ class SwapBackend(private val config: Config) {
         cipher.encrypt(TxStatus.TX_PENDING.toId())?.let { encryptedStatus ->
             try {
                 connect()
+
                 transaction {
                     Log.d("==========")
                     val resultRow = withdrawals.select(status eq encryptedStatus).firstOrNull()
                     resultRow?.let { row ->
-                        close()
                         processTx(row)
-                    } ?: run {
                         close()
+                    } ?: run {
                         onNoTransfers()
+                        close()
                     }
                 }
             } catch (e: java.lang.Exception) {
@@ -112,8 +121,15 @@ class SwapBackend(private val config: Config) {
                 cipher.decrypt(resultRow[amount])?.toBigIntegerOrNull()?.let { amount ->
                     cipher.decrypt(resultRow[address])?.let { address ->
                         try {
+                            updateEthereumBalance()
                             Log.d("address: $address")
-                            val txHash = usoamic.transferUso(config.Account.Password, address, amount)
+
+                            val txHash = usoamic.transferUso(
+                                password = config.Account.Password,
+                                to = address,
+                                value = amount,
+                                txSpeed = TxSpeed.Auto
+                            )
                             Log.d("New transfer: $txHash")
                             transaction {
                                 withdrawals.update({ withdrawals.id eq id }) {
@@ -139,14 +155,38 @@ class SwapBackend(private val config: Config) {
         }
     }
 
+    private fun updateEthereumBalance() {
+        val weiBalance = usoamic.getEthBalance().toBigDecimal()
+        ethBalance = Convert.fromWei(weiBalance, Convert.Unit.ETHER)
+    }
+
     private fun sendNotification(message: String) {
-        println(message)
+        Log.d(message)
         if (::bot.isInitialized) {
             bot.sendNotification(message)
         }
     }
 
     private fun onException(e: Exception) {
-        sendNotification("Exception(): ${e.javaClass}")
+        e.printStackTrace()
+        val ethThreshold = config.ethThreshold
+
+        val message = buildString {
+            append("An error")
+            append("(${e.javaClass})")
+            append(" has occurred")
+            if(e.message != null) {
+                append(" with message ")
+                append(e.message)
+            }
+            append(".")
+            if(ethBalance < ethThreshold) {
+                append(" WARNING: balance ")
+                append(ethBalance.setScale(3, RoundingMode.HALF_DOWN).toPlainString())
+                append(" ETH.")
+            }
+        }
+
+        sendNotification(message)
     }
 }
