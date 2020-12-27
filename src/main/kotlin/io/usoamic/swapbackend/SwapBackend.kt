@@ -40,7 +40,7 @@ class SwapBackend(private val config: Config) {
         networkType = config.Network.Type,
         nodeProvider = config.Network.Node
     )
-    private var ethBalance = BigDecimal.ZERO
+    private lateinit var ethBalance: BigDecimal
     private lateinit var bot: TelegramBot
 
     init {
@@ -180,7 +180,7 @@ class SwapBackend(private val config: Config) {
                 append(e.message)
             }
             append(".")
-            if(ethBalance < ethThreshold) {
+            if(::ethBalance.isInitialized && ethBalance < ethThreshold) {
                 append(" WARNING: balance ")
                 append(ethBalance.setScale(3, RoundingMode.HALF_DOWN).toPlainString())
                 append(" ETH.")
