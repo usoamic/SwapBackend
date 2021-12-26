@@ -25,6 +25,7 @@
     "chatId": 12345,
     "username": "Bot"
   },
+  "exchangeRate": 0.0000009,
   "ethThreshold": 0,
   "timeout":60
 }

@@ -2,12 +2,15 @@ package io.usoamic.swapbackend
 
 import io.usoamic.swapbackend.model.config.Config
 import io.usoamic.swapbackend.model.db.withdrawals
-import io.usoamic.swapbackend.model.db.withdrawals.address
-import io.usoamic.swapbackend.model.db.withdrawals.amount
-import io.usoamic.swapbackend.model.db.withdrawals.id
-import io.usoamic.swapbackend.model.db.withdrawals.status
+import io.usoamic.swapbackend.model.db.withdrawals.address as colAddress
+import io.usoamic.swapbackend.model.db.withdrawals.amount as colAmount
+import io.usoamic.swapbackend.model.db.withdrawals.id as colId
+import io.usoamic.swapbackend.model.db.withdrawals.status as colStatus
+import io.usoamic.swapbackend.model.db.withdrawals.type as colType
 import io.usoamic.swapbackend.other.TelegramBot
+import io.usoamic.swapbackend.other.Transfer
 import io.usoamic.swapbackend.other.TxStatus
+import io.usoamic.swapbackend.other.TxType
 import io.usoamic.swapbackend.security.AesCipher
 import io.usoamic.swapbackend.util.Log
 import io.usoamic.usoamickt.core.Usoamic
@@ -85,7 +88,7 @@ class SwapBackend(private val config: Config) {
 
                 transaction {
                     Log.d("==========")
-                    val resultRow = withdrawals.select(status eq encryptedStatus).firstOrNull()
+                    val resultRow = withdrawals.select(colStatus eq encryptedStatus).firstOrNull()
                     resultRow?.let { row ->
                         close()
                         processTx(row)
@@ -113,45 +116,82 @@ class SwapBackend(private val config: Config) {
     }
 
     private fun processTx(resultRow: ResultRow) {
-        val id = resultRow[id]
-        cipher.decrypt(resultRow[status])?.toIntOrNull()?.let { status ->
-            val txStatus = TxStatus.valueOf(status)
-            Log.d("status: $txStatus")
-            if (txStatus.isPending()) {
-                cipher.decrypt(resultRow[amount])?.toBigIntegerOrNull()?.let { amount ->
-                    cipher.decrypt(resultRow[address])?.let { address ->
-                        try {
-                            updateEthereumBalance()
-                            Log.d("address: $address")
+        val id = resultRow[colId]
 
-                            val txHash = usoamic.transferUso(
-                                password = config.Account.Password,
-                                to = address,
-                                value = amount,
-                                txSpeed = TxSpeed.Auto
-                            )
-                            Log.d("New transfer: $txHash")
-                            transaction {
-                                withdrawals.update({ withdrawals.id eq id }) {
-                                    it[withdrawals.status] = cipher.encrypt(TxStatus.TX_CONFIRMED.toId())!!
-                                }
-                                commit()
-                            }
-                            val numberOfCoins = Coin.fromSat(amount).toBigDecimal()
+        val amount = cipher.decrypt(resultRow[colAmount])?.toBigIntegerOrNull() ?: return
+        val address = cipher.decrypt(resultRow[colAddress]) ?: return
+        val txType = cipher.decrypt(resultRow[colType])?.toIntOrNull()?.let { TxType.valueOf(it) } ?: return
+        val txStatus = cipher.decrypt(resultRow[colStatus])?.toIntOrNull()?.let { TxStatus.valueOf(it) } ?: return
 
-                            sendNotification("TxData: { $address, $numberOfCoins }")
-                            Log.d("Waiting confirmation...")
-                            usoamic.waitTransactionReceipt(txHash) {
-                                sendNotification("TxHash: { $txHash }")
-                                processNextTx()
-                            }
-                        } catch (e: Exception) {
-                            onException(e)
-                            e.printStackTrace()
+        Log.d("status: $txStatus")
+        if (txStatus.isPending()) {
+            try {
+                updateEthereumBalance()
+                Log.d("address: $address")
+
+                val numberOfCoins = Coin.fromSat(amount).toBigDecimal()
+
+                val transferData = when (txType) {
+                    TxType.TX_SENT -> Transfer.Usoamic(
+                        address = address,
+                        satAmount = amount
+                    )
+                    TxType.TX_SENT_ETH -> Transfer.Ether(
+                        address = address,
+                        coinAmount = numberOfCoins
+                    )
+                    else -> null
+                }
+
+                if (transferData != null) {
+                    val txHash = transferFunds(transferData)
+
+                    Log.d("New transfer: $txHash")
+                    transaction {
+                        withdrawals.update({ withdrawals.id eq id }) {
+                            it[colStatus] = cipher.encrypt(TxStatus.TX_CONFIRMED.toId())!!
                         }
+                        commit()
+                    }
+
+
+                    sendNotification("TxData: { $address, $numberOfCoins }")
+                    Log.d("Waiting confirmation...")
+                    usoamic.waitTransactionReceipt(txHash) {
+                        sendNotification("TxHash: { $txHash }")
+                        processNextTx()
                     }
                 }
+            } catch (e: Exception) {
+                onException(e)
+                e.printStackTrace()
             }
+        }
+    }
+
+    private fun transferFunds(
+        data: Transfer
+    ): String {
+        val address = data.address
+        val password = config.Account.Password
+        val txSpeed = TxSpeed.Auto
+
+        return when (data) {
+            is Transfer.Ether -> usoamic.transferEth(
+                password = password,
+                to = address,
+                value = Convert.toWei(
+                    data.coinAmount * config.exchangeRate,
+                    Convert.Unit.ETHER
+                ).toBigInteger(),
+                txSpeed = txSpeed
+            )
+            is Transfer.Usoamic -> usoamic.transferUso(
+                password = password,
+                to = address,
+                value = data.satAmount,
+                txSpeed = txSpeed
+            )
         }
     }
 
@@ -175,12 +215,12 @@ class SwapBackend(private val config: Config) {
             append("An error")
             append("(${e.javaClass})")
             append(" has occurred")
-            if(e.message != null) {
+            if (e.message != null) {
                 append(" with message ")
                 append(e.message)
             }
             append(".")
-            if(::ethBalance.isInitialized && ethBalance < ethThreshold) {
+            if (::ethBalance.isInitialized && ethBalance < ethThreshold) {
                 append(" WARNING: balance ")
                 append(ethBalance.setScale(3, RoundingMode.HALF_DOWN).toPlainString())
                 append(" ETH.")

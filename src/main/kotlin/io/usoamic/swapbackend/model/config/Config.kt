@@ -10,6 +10,7 @@ data class Config (
     @SerializedName("account") val Account: Account,
     @SerializedName("network") val Network: Network,
     @SerializedName("bot") val Bot: Bot?,
+    @SerializedName("exchangeRate") val exchangeRate: BigDecimal,
     @SerializedName("ethThreshold") val ethThreshold: BigDecimal,
     @SerializedName("timeout") val Timeout: Long
 ) {
