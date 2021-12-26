@@ -1,0 +1,30 @@
+{
+  "db": {
+    "url":"jdbc:mysql://127.0.0.1:3306/default",
+    "driver":"com.mysql.cj.jdbc.Driver",
+    "user":"default",
+    "password":"@1234"
+  },
+  "aes": {
+    "method":"AES/CBC/PKCS5Padding",
+    "key":"AES_KEY",
+    "iv":"AES_IV"
+  },
+  "account": {
+    "filename": "account.json",
+    "password": "@1234",
+    "private_key": "ACCOUNT_PRIVATE_KEY"
+  },
+  "network": {
+    "type": "mainnet",
+    "node": "infura",
+    "arguments": ""
+  },
+  "bot": {
+    "token": "TOKEN",
+    "chatId": 12345,
+    "username": "Bot"
+  },
+  "ethThreshold": 0,
+  "timeout":60
+}
