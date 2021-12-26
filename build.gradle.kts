@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "io.usoamic"
-    version = "1.2.5"
+    version = "1.3.0"
 }
 
 configure<JavaPluginConvention> {
@@ -30,16 +30,16 @@ repositories {
 }
 
 dependencies {
-    compile("org.jetbrains.kotlin", "kotlin-stdlib", "1.3.72")
-    compile("org.web3j", "core", "4.6.0")
-    compile("org.jetbrains.exposed", "exposed-core", "0.28.1")
-    compile("org.jetbrains.exposed", "exposed-dao", "0.28.1")
-    compile("org.jetbrains.exposed", "exposed-jdbc", "0.28.1")
-    compile("mysql", "mysql-connector-java", "8.0.22")
-    compile("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
-    compile("com.google.code.gson", "gson", "2.8.6")
-    compile("com.github.usoamic", "usoamickt", "v1.2.1")
-    compile("org.telegram", "telegrambots", "4.9")
+    implementation("org.jetbrains.kotlin", "kotlin-stdlib", "1.3.72")
+    implementation("org.web3j", "core", "4.6.0")
+    implementation("org.jetbrains.exposed", "exposed-core", "0.28.1")
+    implementation("org.jetbrains.exposed", "exposed-dao", "0.28.1")
+    implementation("org.jetbrains.exposed", "exposed-jdbc", "0.28.1")
+    implementation("mysql", "mysql-connector-java", "8.0.22")
+    implementation("org.jetbrains.kotlin", "kotlin-stdlib-jdk8")
+    implementation("com.google.code.gson", "gson", "2.8.6")
+    implementation("com.github.usoamic", "usoamickt", "v1.2.1")
+    implementation("org.telegram", "telegrambots", "4.9")
 }
 
 val fatJar = task("fatJar", type = Jar::class) {
